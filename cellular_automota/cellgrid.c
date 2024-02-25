@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include<unistd.h> // for sleep
 
 #include "cell.h"
 
@@ -20,27 +21,25 @@ Cell **createCellGrid(int window_width, int window_height, int cell_dimension) {
         grid[i] = malloc(num_cols * sizeof(Cell));
     }
 
+    Cell gc;
     int x_pos = 0;
     int y_pos = 0;
     int solid_val = 0;
 
     int row_mid = floor(num_rows/2) - 1;
     int col_mid = floor(num_cols/2) - 1;
+    int initial_size = 20;
     
     time_t t;
     srand((unsigned) time(&t));
     
     for (int r = 0; r < num_rows; r++) {
         for (int c = 0; c < num_cols; c++) {
-
             
-            // 10 x 10
-            // row 39 to 49, col 59 to 69
-            
-            if (((r >= row_mid-5) && (r <= row_mid+5)) && ((c >= col_mid-5) && (c <= col_mid+5))) {
-                if (rand() % 50 < 25) solid_val = 1;
+            if (((r >= row_mid-(initial_size/2)) && (r <= row_mid+(initial_size/2))) && 
+                ((c >= col_mid-(initial_size/2)) && (c <= col_mid+(initial_size/2)))) {
+                    if (rand() % 50 < 25) solid_val = 1;
             } 
-
 
             Cell gc = {
                 (Vector2) { x_pos, y_pos },
@@ -63,12 +62,16 @@ Cell **createCellGrid(int window_width, int window_height, int cell_dimension) {
 
 int drawCellGrid(Cell **grid, int r, int c) {
 
+    Vector2 curr_cell_position;
+    int cell_dimension;
+    int curr_cell_solid ;
+
     for (int i = 0; i < r; i++) {
         for (int j = 0; j < c; j++) {
 
-            Vector2 curr_cell_position = grid[i][j].position;
-            int cell_dimension = grid[i][j].dimension;
-            int curr_cell_solid = grid[i][j].solid;
+            curr_cell_position = grid[i][j].position;
+            cell_dimension = grid[i][j].dimension;
+            curr_cell_solid = grid[i][j].solid;
 
             // If solid == 1
             if (curr_cell_solid) {
@@ -84,15 +87,76 @@ int drawCellGrid(Cell **grid, int r, int c) {
 }
 
 
+// i,j is the cell in grid[i][j]
+int checkSurroundingCells(Cell **grid, int i, int j, int r, int c) {
+
+    Cell curr_cell = grid[i][j];
+    int alive_cells = 0;
+
+    if ((i-1) > -1 && (i-1) < r) {
+        Cell n = grid[i-1][j];
+        if (n.solid) alive_cells++;
+    }
+    if ((i-1) > -1 && (i-1) < r && (j+1) > -1 && (j+1) < c) {
+        Cell ne = grid[i-1][j+1];
+        if (ne.solid) alive_cells++;
+    }
+    if ((j+1) > -1 && (j+1) < c) {
+        Cell e = grid[i][j+1];
+        if (e.solid) alive_cells++;
+    }
+    if ((i+1) > -1 && (i+1) < r && (j+1) > -1 && (j+1) < c) {
+        Cell se = grid[i+1][j+1];
+        if (se.solid) alive_cells++;
+    }
+    if ((i+1) > -1 && (i+1) < r) {
+        Cell s = grid[i+1][j];
+        if (s.solid) alive_cells++;
+    }
+    if ((i+1) > -1 && (i+1) < r && (j-1) > -1 && (j-1) < c) {
+        Cell sw = grid[i+1][j-1];
+        if (sw.solid) alive_cells++;
+    }
+    if ((j-1) > -1 && (j-1) < c) {
+        Cell w = grid[i][j-1];
+        if (w.solid) alive_cells++;
+    }
+    if ((i-1) > -1 && i < r && (j-1) > -1 && j < c) {
+        Cell nw = grid[i-1][j-1];
+        if (nw.solid) alive_cells++;
+    }
+
+    return alive_cells;
+}
+
 
 Cell **cellAutomationUpdateGrid(Cell **grid, int r, int c) {
 
-    for (int i = 0; i < r; i++) {
-        for (int j = 0; j < c; j++) {
+    Cell *curr_cell;
+    int neighbourhood;
 
+    for (int iter = 1; iter < 11; iter++) {
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
 
-
-
+                
+                curr_cell = &grid[i][j];
+                neighbourhood = checkSurroundingCells(grid, i, j, r, c);
+                
+                if (curr_cell->solid == 0) {
+                    
+                    if (neighbourhood == 3) {
+                        curr_cell->solid = 1;
+                    } 
+                }
+                if (curr_cell->solid == 1) {
+                    if (neighbourhood < 1 || neighbourhood > 5) {
+                        curr_cell->solid = 0;
+                    }
+                }            
+            }
         }
     }
+
+    return grid;
 }
