@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#include<unistd.h> // for sleep
 
 #include "cell.h"
 
@@ -28,7 +27,7 @@ Cell **createCellGrid(int window_width, int window_height, int cell_dimension) {
 
     int row_mid = floor(num_rows/2) - 1;
     int col_mid = floor(num_cols/2) - 1;
-    int initial_size = 20;
+    int initial_size = 60;
     
     time_t t;
     srand((unsigned) time(&t));
@@ -38,7 +37,7 @@ Cell **createCellGrid(int window_width, int window_height, int cell_dimension) {
             
             if (((r >= row_mid-(initial_size/2)) && (r <= row_mid+(initial_size/2))) && 
                 ((c >= col_mid-(initial_size/2)) && (c <= col_mid+(initial_size/2)))) {
-                    if (rand() % 50 < 25) solid_val = 1;
+                    if (rand() % 50 < 30) solid_val = 1;
             } 
 
             Cell gc = {

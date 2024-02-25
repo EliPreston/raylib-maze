@@ -16,9 +16,9 @@ int main(int argc, char *argv[]) {
     // Initialization
 
     // Defaults
-    const int width = 850;
+    const int width = 1000;
     const int height = 850;
-    const int node_distance = 10;
+    const int node_distance = 5;
 
      // Set up grid
     int num_rows = (height / node_distance);
@@ -37,7 +37,10 @@ int main(int argc, char *argv[]) {
         
         // Any update functions
         if (IsKeyPressed(KEY_R)) {
+            for (int idx = 0; idx < num_rows; idx++) free(cells_grid[idx]);
+            free(cells_grid);
             cells_grid = createCellGrid(width, height, node_distance);
+            
         }
 
         if (IsKeyPressed(KEY_S)) {
@@ -60,7 +63,7 @@ int main(int argc, char *argv[]) {
 
 
 
-
+    for (int idx = 0; idx < num_rows; idx++) free(cells_grid[idx]);
     free(cells_grid);
     CloseWindow();
 
