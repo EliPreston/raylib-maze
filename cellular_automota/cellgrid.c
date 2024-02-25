@@ -134,7 +134,7 @@ Cell **cellAutomationUpdateGrid(Cell **grid, int r, int c) {
     Cell *curr_cell;
     int neighbourhood;
 
-    for (int iter = 1; iter < 11; iter++) {
+    for (int iter = 1; iter < 6; iter++) {
         for (int i = 0; i < r; i++) {
             for (int j = 0; j < c; j++) {
 
