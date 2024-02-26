@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <unistd.h>
 
 #include "cell.h"
 
@@ -27,7 +28,7 @@ Cell **createCellGrid(int window_width, int window_height, int cell_dimension) {
 
     int row_mid = floor(num_rows/2) - 1;
     int col_mid = floor(num_cols/2) - 1;
-    int initial_size = 60;
+    int initial_size = 30;
     
     time_t t;
     srand((unsigned) time(&t));
@@ -134,7 +135,7 @@ Cell **cellAutomationUpdateGrid(Cell **grid, int r, int c) {
     Cell *curr_cell;
     int neighbourhood;
 
-    for (int iter = 1; iter < 6; iter++) {
+    // for (int iter = 1; iter < 6; iter++) {
         for (int i = 0; i < r; i++) {
             for (int j = 0; j < c; j++) {
 
@@ -155,7 +156,7 @@ Cell **cellAutomationUpdateGrid(Cell **grid, int r, int c) {
                 }            
             }
         }
-    }
+    // }
 
     return grid;
 }

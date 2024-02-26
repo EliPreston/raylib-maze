@@ -1,4 +1,4 @@
-# Maze creation with raylib
+# Maze creation & Cellular Automota with raylib
 
 ## Generating random maze using 2 approaches
 1. Graph theory based using algorithms like Prim's/Wilson's (creates a perfect maze)
