@@ -6,6 +6,7 @@
 #include "raylib.h"
 // My files
 #include "grid.c"
+#include "wilson.c"
 
 
 
@@ -26,7 +27,8 @@ int main(int argc, char *argv[]) {
     
     GridCell** grid = NULL;
     grid = createCellGrid(width, height, node_distance);
-    generateWilsonsMaze(grid, num_rows, num_cols, node_distance, false);
+    generateWilsonsMaze(grid, num_rows, num_cols, node_distance);
+    // generateWilsonsMaze(grid, num_rows, num_cols, node_distance, false);
 
     InitWindow(width, height, "Graph theory based maze creation - Wilson's Algorithm");
     SetTargetFPS(60);
@@ -38,7 +40,8 @@ int main(int argc, char *argv[]) {
         // Any update functions
         if (IsKeyPressed(KEY_R)) {
             // This doens't work, i don't know why it basically generates the same set of numbers over and over
-            generateWilsonsMaze(grid, num_rows, num_cols, node_distance, true);
+            // generateWilsonsMaze(grid, num_rows, num_cols, node_distance, true);
+            generateWilsonsMaze(grid, num_rows, num_cols, node_distance);
         }
         
 

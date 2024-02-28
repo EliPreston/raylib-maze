@@ -1,13 +1,10 @@
-typedef struct Wall {
-    Vector2 start_point;
-    Vector2 end_point;
-} Wall;
+typedef struct Vertex {
+    Vector2 position; // upper left hand corner of square/cell -> use this to calculate center position of node (what the square surrounds), and the other 4 corners of the cell surrounding the vertex
+    int dimension;
+} Vertex;
 
-
-typedef struct GridCell {
-    Vector2 top_left;
-    Vector2 top_right;
-    Vector2 bottom_left;
-    Vector2 bottom_right;
+typdef struct Edge {
     bool part_of_maze;
-} GridCell;
+    Vertex *v1;
+    Vertex *v2;
+} Edge;

@@ -24,8 +24,8 @@ int main(int argc, char *argv[]) {
     int num_rows = (height / nodeDistance);
     int num_cols = (width / nodeDistance);
     
-    GridCell** grid = NULL;
-    grid = createCellGrid(width, height, nodeDistance);
+    Edge** edge_grid = NULL;
+    edge_grid = createCellGrid(width, height, nodeDistance);
 
     InitWindow(width, height, "Graph theory based maze creation");
     SetTargetFPS(60);

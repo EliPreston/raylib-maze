@@ -6,9 +6,7 @@
 
 typedef struct GridCell {
     Vector2 top_left;
-    Vector2 top_right;
-    Vector2 bottom_left;
-    Vector2 bottom_right;
     bool part_of_maze;
+    bool part_of_final_maze;
     struct GridCell *next_node;
 } GridCell;
