@@ -11,8 +11,17 @@ int genRandNum(int min, int max);
 bool isValidIndex(int row_max, int col_max, int given_row, int given_col);
 int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col_pos);
 void performRandomWalk(GridCell **grid, int r, int c, int random_start_row, int random_start_col);
+void resetMaze(GridCell **grid, int r, int c);
 
 GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance) {
+
+    // int t_c = 20;
+    // int t = 0;
+    // // for (t; t < t_c; t++) printf("%d\n", genRandNum(1, 4));
+    // while (t < t_c) {
+    //     printf("%d\n", genRandNum(1, 5));
+    //     t++;
+    // }
 
     // 0. Initializations/Declarations
     int random_start_row, random_start_col; 
@@ -40,6 +49,7 @@ GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance)
     // LOOP UNTIL all vertices have been added to the UST (i.e. All vertices are part of final maze)
     while (num_of_cells_in_maze < r*c) {
             
+            printf("Number of cells in final maze: %d\n", num_of_cells_in_maze);
             // 2. Select any vertex that is not already in the UST and perform a random walk until you encounter a vertex that is in the UST.
             // Variables random_start_row/col now denote the position of the random start position of the current random walk
             cell_not_in_maze_found = false;
@@ -52,6 +62,7 @@ GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance)
                     cell_not_in_maze_found = true;
                 }
             }
+            printf("Found a cell not in the final maze at: %d, %d\n", random_start_row, random_start_col);
             performRandomWalk(grid, r, c, random_start_row, random_start_col);
 
 
@@ -71,9 +82,10 @@ GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance)
                 for (int j = 0; j < c; j++) {
                     if ((&grid[i][j])->cell_state == PART_OF_MAZE_WALK) (&grid[i][j])->cell_state = NOT_PART_OF_MAZE;
                 }
-            }            
+            }
 
     // END LOOP
+    printf("------------------\n");
     }
 
     return grid;
@@ -82,6 +94,8 @@ GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance)
 
 // Helper function to perform a random walk starting at a random row,col
 void performRandomWalk(GridCell **grid, int r, int c, int random_start_row, int random_start_col) {
+
+    printf("Performing random walk starting at: %d, %d\n", random_start_row, random_start_col);
 
     GridCell *curr_cell, *next_cell;
     curr_cell = &grid[random_start_row][random_start_col];
@@ -104,8 +118,13 @@ void performRandomWalk(GridCell **grid, int r, int c, int random_start_row, int 
         //          (3) 
         //           S
 
-        // getValidMove() modifies nest_row/col_pos so that when the method returns, the variables identify the position of the next valid cell 
+        printf("Moving from: %d, %d to ", next_row_pos, next_col_pos);
+        // getValidMove() modifies next_row/col_pos so that when the method returns, the variables identify the position of the next valid cell 
         move_direction = getValidMove(grid, r, c, &next_row_pos, &next_col_pos);
+        printf("%d, %d with direction %d\n", next_row_pos, next_col_pos, move_direction);
+
+        // printf("Trying to find cell: %d, %d\n", random_start_row, random_start_col);
+
         next_cell = &grid[next_row_pos][next_col_pos];
 
         curr_cell->next_node = next_cell;
@@ -167,13 +186,14 @@ int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col
         int move_direction;
         while (!found_valid_move) {
 
-            move_direction = genRandNum(1, 4);
+            move_direction = genRandNum(1, 5);
 
             if (move_direction == 1) {
                 //  move North (r-1): check if r-1 is valid
                 if (isValidIndex(r, c, (*curr_row_pos)-1, (*curr_col_pos))) {
                     (*curr_row_pos)--;
                     found_valid_move = true;
+                    // printf("moving north (1)\n");
                     return 1;
                 }
             }
@@ -182,6 +202,7 @@ int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col
                 if (isValidIndex(r, c, (*curr_row_pos), (*curr_col_pos)+1)) {
                     (*curr_col_pos)++;
                     found_valid_move = true;
+                    // printf("moving east (2)\n");
                     return 2;
                 }
             }
@@ -190,6 +211,7 @@ int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col
                 if (isValidIndex(r, c, (*curr_row_pos)+1, (*curr_col_pos))) {
                     (*curr_row_pos)++;
                     found_valid_move = true;
+                    // printf("moving south (3)\n");
                     return 3;
                 }
             }
@@ -198,10 +220,25 @@ int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col
                 if (isValidIndex(r, c, (*curr_row_pos), (*curr_col_pos)-1)) {
                     (*curr_col_pos)--;
                     found_valid_move = true;
+                    // printf("moving west (4)\n");
                     return 4;
                 }
             }
 
         }
         return -1;
+}
+
+
+void resetMaze(GridCell **grid, int r, int c) {
+
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            (&grid[i][j])->cell_state = NOT_PART_OF_MAZE;
+            (&grid[i][j])->cell_exit_direction = NONE;
+            (&grid[i][j])->next_node = NULL;
+        }
+    }
+    printf("Grid/Board reset\n");
+    return;
 }

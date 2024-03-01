@@ -17,9 +17,9 @@ int main(int argc, char *argv[]) {
     // Initialization
 
     // Defaults
-    const int width = 900;
-    const int height = 600;
-    const int node_distance = 15;
+    const int width = 800;
+    const int height = 500;
+    const int node_distance = 20;
 
      // Set up grid
     int num_rows = (height / node_distance);
@@ -39,8 +39,7 @@ int main(int argc, char *argv[]) {
         
         // Any update functions
         if (IsKeyPressed(KEY_R)) {
-            // This doens't work, i don't know why it basically generates the same set of numbers over and over
-            // generateWilsonsMaze(grid, num_rows, num_cols, node_distance, true);
+            resetMaze(grid, num_rows, num_cols);
             generateWilsonsMaze(grid, num_rows, num_cols, node_distance);
         }
         
