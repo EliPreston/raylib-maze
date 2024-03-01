@@ -92,27 +92,6 @@ int drawGridCells(GridCell **grid, int r, int c, int node_distance) {
 }
 
 
-
-// void drawEntrancesExits(GridCell *curr_cell, int node_distance) {
-    
-//     if ((curr_cell->cell_exit_direction != NORTH && curr_cell->cell_entrance_direction != NORTH)) {
-//         drawNorthWall(curr_cell, node_distance);
-//     }
-
-//     if (curr_cell->cell_exit_direction != EAST && curr_cell->cell_entrance_direction != EAST) {
-//         drawEastWall(curr_cell, node_distance);
-//     }
-
-//     if ((curr_cell->cell_exit_direction != SOUTH && curr_cell->cell_entrance_direction != SOUTH)) {
-//         drawSouthWall(curr_cell, node_distance);
-//     }
-
-//     if (curr_cell->cell_exit_direction != WEST && curr_cell->cell_entrance_direction != WEST) {
-//         drawWestWall(curr_cell, node_distance);
-//     }
-// }
-
-
 void drawNorthWall(GridCell *curr_cell, int node_distance) {
     Vector2 top_left = (*curr_cell).top_left;
     Vector2 top_right = (Vector2) { top_left.x + node_distance, top_left.y };
