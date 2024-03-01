@@ -12,11 +12,12 @@ typedef enum {
     SOUTH,
     WEST,
     NONE
-} ExitDirection;
+} Direction;
 
 typedef struct GridCell {
     Vector2 top_left;
     CellState cell_state;      // bool part_of_maze; // bool part_of_final_maze;
     struct GridCell *next_node;
-    ExitDirection cell_exit_direction;
+    Direction cell_entrance_direction;
+    Direction cell_exit_direction;
 } GridCell;
