@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
     
     GridCell** grid = NULL;
     grid = createCellGrid(width, height, node_distance);
-    generateWilsonsMaze(grid, num_rows, num_cols, node_distance);
+    // generateWilsonsMaze(grid, num_rows, num_cols, node_distance);
     // generateWilsonsMaze(grid, num_rows, num_cols, node_distance, false);
 
     InitWindow(width, height, "Graph theory based maze creation - Wilson's Algorithm");

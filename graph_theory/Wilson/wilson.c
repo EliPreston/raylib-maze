@@ -9,7 +9,7 @@
 // Function declarations
 int genRandNum(int min, int max);
 bool isValidIndex(int row_max, int col_max, int given_row, int given_col);
-int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col_pos)
+int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col_pos);
 void performRandomWalk(GridCell **grid, int r, int c, int random_start_row, int random_start_col);
 
 GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance) {
@@ -37,7 +37,7 @@ GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance)
     num_of_cells_in_maze++;
 
 
-     // LOOP UNTIL all vertices have been added to the UST (i.e. All vertices are part of final maze)
+    // LOOP UNTIL all vertices have been added to the UST (i.e. All vertices are part of final maze)
     while (num_of_cells_in_maze < r*c) {
             
             // 2. Select any vertex that is not already in the UST and perform a random walk until you encounter a vertex that is in the UST.
@@ -46,7 +46,7 @@ GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance)
             while (!cell_not_in_maze_found) {
                 random_start_row = genRandNum(0, r-1);
                 random_start_col = genRandNum(0, c-1);
-                if (&grid[random_start_row][random_start_col]->cell_state == NOT_PART_OF_MAZE) {
+                if ((&grid[random_start_row][random_start_col])->cell_state == NOT_PART_OF_MAZE) {
                     // Similarily for start_cell as random_start_row/col, start_cell is now the cell that starts the current random walk
                     start_cell = &grid[random_start_row][random_start_col];
                     cell_not_in_maze_found = true;
@@ -61,6 +61,7 @@ GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance)
                 curr_cell_in_walk = cell_walk_next;
                 cell_walk_next = curr_cell_in_walk->next_node;
                 curr_cell_in_walk->cell_state = PART_OF_MAZE_FINAL;
+                num_of_cells_in_maze++;
             }
     
 
@@ -68,7 +69,7 @@ GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance)
             // (spaces that were part of the random walk, but potentially not added to final maze)
             for (int i = 0; i < r; i++) {
                 for (int j = 0; j < c; j++) {
-                    if (&grid[i][j]->cell_state == PART_OF_MAZE_WALK) &grid[i][j]->cell_state = NOT_PART_OF_MAZE;
+                    if ((&grid[i][j])->cell_state == PART_OF_MAZE_WALK) (&grid[i][j])->cell_state = NOT_PART_OF_MAZE;
                 }
             }            
 
@@ -170,20 +171,37 @@ int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col
 
             if (move_direction == 1) {
                 //  move North (r-1): check if r-1 is valid
-                if (isValidIndex(r, c, (*curr_row_pos)-1, (*curr_col_pos))) (*curr_row_pos)--;
+                if (isValidIndex(r, c, (*curr_row_pos)-1, (*curr_col_pos))) {
+                    (*curr_row_pos)--;
+                    found_valid_move = true;
+                    return 1;
+                }
             }
             if (move_direction == 2) {
                 // move East (c+1): check if c+1 is valid
-                if (isValidIndex(r, c, (*curr_row_pos), (*curr_col_pos)+1)) (*curr_col_pos)++;
+                if (isValidIndex(r, c, (*curr_row_pos), (*curr_col_pos)+1)) {
+                    (*curr_col_pos)++;
+                    found_valid_move = true;
+                    return 2;
+                }
             }
             if (move_direction == 3) {
                 // move South (r+1): check if r+1 is valid
-                if (isValidIndex(r, c, (*curr_row_pos)+1, (*curr_col_pos))) (*curr_row_pos)++;
+                if (isValidIndex(r, c, (*curr_row_pos)+1, (*curr_col_pos))) {
+                    (*curr_row_pos)++;
+                    found_valid_move = true;
+                    return 3;
+                }
             }
             if (move_direction == 4) {
                 // move West (c-1): check if c-1 is valid
-                if (isValidIndex(r, c, (*curr_row_pos), (*curr_col_pos)-1)) (*curr_col_pos)--;
+                if (isValidIndex(r, c, (*curr_row_pos), (*curr_col_pos)-1)) {
+                    (*curr_col_pos)--;
+                    found_valid_move = true;
+                    return 4;
+                }
             }
 
         }
+        return -1;
 }
