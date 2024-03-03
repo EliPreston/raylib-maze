@@ -3,6 +3,7 @@
 *.md
 *.bak
 *.DS_Store
+*.vscode
 
 # Prerequisites
 *.d

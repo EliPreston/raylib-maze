@@ -4,20 +4,13 @@ typedef enum {
     NOT_PART_OF_MAZE,
     PART_OF_MAZE_WALK,
     PART_OF_MAZE_FINAL,
+    START,
 } CellState;
-
-typedef enum {
-    NORTH,
-    EAST,
-    SOUTH,
-    WEST,
-    NONE
-} Direction;
 
 typedef struct GridCell {
     Vector2 top_left;
-    CellState cell_state;      // bool part_of_maze; // bool part_of_final_maze;
+    bool start_cell;
+    CellState cell_state;
     struct GridCell *next_node;
-    Direction cell_entrance_direction;
-    Direction cell_exit_direction;
+    int edges[4];
 } GridCell;

@@ -15,164 +15,227 @@ void resetMaze(GridCell **grid, int r, int c);
 
 GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance) {
 
-    // 0. Initializations/Declarations
-    int random_start_row, random_start_col; 
-    int num_of_cells_in_maze = 0;
+    int start_row;
+    int start_col;
+    int num_of_cells_in_maze;
     bool cell_not_in_maze_found;
+    bool connected_to_final_maze;
 
+    int took_too_long_count = 0;
+    bool took_too_long = false;
+    int flip_search_direction = 0;
+
+    int walk_start_row;
+    int walk_start_col;
+    int walk_next_row;
+    int walk_next_col;
+    int move_direction;
+    
     GridCell *start_cell;
-    GridCell *cell_walk_next;
-    GridCell *curr_cell_in_walk;
-    
+    GridCell *cell_walk_start;
+    GridCell *cell_walk_curr;
+    GridCell *cell_walk_prev;
 
-    // 1. Choose any vertex at random and add it to the UST.
-    // Initially start_cell is the very first cell chosen to be added the final maze
-    // and random_start_row/col is the location of that first cell in the grid
-    // (the meaning of these variables change in the while loop below)
-    random_start_row = genRandNum(0, r-1);
-    random_start_col = genRandNum(0, c-1);
-    printf("%d, %d\n", random_start_row, random_start_col);
+    GridCell *curr_cell_backtrack;
 
-    start_cell = &grid[random_start_row][random_start_col];
-    start_cell->cell_state = PART_OF_MAZE_FINAL;
-    num_of_cells_in_maze++;
+    int reset_edges[4];
 
 
-    // LOOP UNTIL all vertices have been added to the UST (i.e. All vertices are part of final maze)
-    while (num_of_cells_in_maze < r*c) {
+    // start_row = genRandNum(0, r-1);
+    // start_col = genRandNum(0, c-1);
+    start_row = 0;
+    start_col = 0;
+    (&grid[start_row][start_col])->cell_state = PART_OF_MAZE_FINAL;
+    (&grid[start_row][start_col])->start_cell = true;
+    num_of_cells_in_maze = 1;
+
+    printf("INITAL CELL: (%d, %d)\n", start_row, start_col);
+   
+
+    int count1 = 0;
+    while (num_of_cells_in_maze <= (r*c)) {
+    // while (count1 < 200) {
+        count1++;
+
+        cell_not_in_maze_found = false;
+        // printf("finding cell not in maze: ");
+        while (!cell_not_in_maze_found && !took_too_long) {
+
+            walk_start_row = genRandNum(0, r-1);
+            walk_start_col = genRandNum(0, c-1);
+
+            if ((&grid[walk_start_row][walk_start_col])->cell_state != PART_OF_MAZE_FINAL) {
+                cell_walk_start = &grid[walk_start_row][walk_start_col];
+                cell_not_in_maze_found = true;
+                // printf("found free cell at %d, %d\n", walk_start_row, walk_start_col);
+            }
+
+            took_too_long_count++;
+            if (took_too_long_count > 1000) took_too_long = true;
+        }
+
+        if (took_too_long) {
+            switch (flip_search_direction) {
+                case 0:
+                    flip_search_direction = 1;
+                    for (int i = 0; i < r; i++) {
+                        for (int j = 0; j < c; j++) {
+                            if ((&grid[i][j])->cell_state != PART_OF_MAZE_FINAL) {
+                                cell_walk_start = &grid[i][j];
+                                cell_not_in_maze_found = true;
+                                // printf("Took too long, but found free cell at %d, %d\n", i, j);
+                                break;
+                            }
+                        }
+                        if (cell_not_in_maze_found) break;
+                    }   
+                
+                case 1:
+                    flip_search_direction = 1;
+                    for (int j = 0; j < c; j++) {
+                        for (int i = 0; i < r; i++) {
+                            if ((&grid[i][j])->cell_state != PART_OF_MAZE_FINAL) {
+                                cell_walk_start = &grid[i][j];
+                                cell_not_in_maze_found = true;
+                                // printf("Took too long, but found free cell at %d, %d\n", i, j);
+                                break;
+                            }
+                        }
+                        if (cell_not_in_maze_found) break;
+                    }   
+            }
+
+            if (!cell_not_in_maze_found) {
+                printf("NO EMPTY CELLS\n");
+                return grid;
+            }
+        }
+
+
+        // Need to set the next position(s) to the start position(s) initally because the 
+        // getValidMove method modifies these positions directly
+        walk_next_row = walk_start_row;
+        walk_next_col = walk_start_col;
+        cell_walk_prev = cell_walk_start;
+        connected_to_final_maze = false;
+
+        while (!connected_to_final_maze) {
+
+            move_direction = getValidMove(grid, r, c, &walk_next_row, &walk_next_col);
+            cell_walk_curr = &grid[walk_next_row][walk_next_col];
+            cell_walk_prev->next_node = cell_walk_curr;
+
+            // RATHER THAN KEEPING TRACK OF DIRECTION HERE
+            // CALCULATE WHICH EDGES NEED TO BE DRAWN/REMOVED WHEN BACKTRACKING
+
+            if (cell_walk_curr->cell_state == PART_OF_MAZE_FINAL) {
+                
+                connected_to_final_maze = true;
+                cell_walk_curr->next_node = NULL;
+
+                switch (move_direction) {
+                    case 1: 
+                        // change prev cell edges to correspond with which direction it was exited
+                        // change curr cell edges to correspond with which direction it was entered
+                        (cell_walk_prev->edges)[0] = 0; 
+                        (cell_walk_curr->edges)[2] = 0;
+                        break;
+                    case 2: 
+                        (cell_walk_prev->edges)[1] = 0; 
+                        (cell_walk_curr->edges)[3] = 0;
+                        break;
+                    case 3: 
+                        (cell_walk_prev->edges)[2] = 0; 
+                        (cell_walk_curr->edges)[0] = 0;
+                        break;
+                    case 4: 
+                        (cell_walk_prev->edges)[3] = 0; 
+                        (cell_walk_curr->edges)[1] = 0;
+                        break;
+                    default: printf("Should not hit this default case, this is an error\n");
+                }
+
+
+            } 
+            else {
+                //              NORTH  EAST  SOUTH  WEST
+                // edges[4] = { 1/0,   1/0,  1/0,   1/0 }
+                switch (move_direction) {
+                    case 1: 
+                        // change prev cell edges to correspond with which direction it was exited
+                        // change curr cell edges to correspond with which direction it was entered
+                        (cell_walk_prev->edges)[0] = 0; 
+                        (cell_walk_curr->edges)[2] = 0;
+                        break;
+                    case 2: 
+                        (cell_walk_prev->edges)[1] = 0; 
+                        (cell_walk_curr->edges)[3] = 0;
+                        break;
+                    case 3: 
+                        (cell_walk_prev->edges)[2] = 0; 
+                        (cell_walk_curr->edges)[0] = 0;
+                        break;
+                    case 4: 
+                        (cell_walk_prev->edges)[3] = 0; 
+                        (cell_walk_curr->edges)[1] = 0;
+                        break;
+                    default: printf("Should not hit this default case, this is an error\n");
+                    }
+            }
+
+            cell_walk_prev = cell_walk_curr;
+            move_direction = 0;
+        }
+
+        // 3. Add the vertices and edges touched in the random walk to the UST.
+        curr_cell_backtrack = cell_walk_start;
+
+        while (curr_cell_backtrack->next_node != NULL) {
+
+            curr_cell_backtrack->cell_state = PART_OF_MAZE_FINAL;
+            curr_cell_backtrack = curr_cell_backtrack->next_node;
             
-            printf("Number of cells currently in final maze: %d\n", num_of_cells_in_maze);
-            // 2. Select any vertex that is not already in the UST and perform a random walk until you encounter a vertex that is in the UST.
-            // Variables random_start_row/col now denote the position of the random start position of the current random walk
-            cell_not_in_maze_found = false;
-            while (!cell_not_in_maze_found) {
-                random_start_row = genRandNum(0, r-1);
-                random_start_col = genRandNum(0, c-1);
-                if ((&grid[random_start_row][random_start_col])->cell_state == NOT_PART_OF_MAZE) {
-                    // Similarily for start_cell as random_start_row/col, start_cell is now the cell that starts the current random walk
-                    start_cell = &grid[random_start_row][random_start_col];
-                    cell_not_in_maze_found = true;
+            num_of_cells_in_maze++;
+        }
+
+        // 4. RESET GRID SPACES NOT IN FINAL MAZE
+        // (spaces that were part of the random walk, but potentially not added to final maze)
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                if ((&grid[i][j])->cell_state != PART_OF_MAZE_FINAL) {
+                    (&grid[i][j])->cell_state = NOT_PART_OF_MAZE;
+                    (&grid[i][j])->next_node = NULL;
+                    ((&grid[i][j])->edges)[0] = 1;
+                    ((&grid[i][j])->edges)[1] = 1;
+                    ((&grid[i][j])->edges)[2] = 1;
+                    ((&grid[i][j])->edges)[3] = 1;
+
+
+                    // reset_edges = (&grid[i][j])->edges;
+                    // for (int k = 0; k < 3; k++)
+                
+                    // (&grid[i][j])->cell_entrance_direction = NONE;
+                    // (&grid[i][j])->cell_exit_direction = NONE;
                 }
+
+                
             }
-            // printf("Found a cell not in the final maze at: %d, %d\n", random_start_row, random_start_col);
-            performRandomWalk(grid, r, c, random_start_row, random_start_col);
-
-
-            // 3. Add the vertices and edges touched in the random walk to the UST.
-            cell_walk_next = start_cell->next_node;
-            while (cell_walk_next != NULL) {
-                curr_cell_in_walk = cell_walk_next;
-                cell_walk_next = curr_cell_in_walk->next_node;
-                curr_cell_in_walk->cell_state = PART_OF_MAZE_FINAL;
-                num_of_cells_in_maze++;
-            }
-    
-
-            // 4. RESET GRID SPACES NOT IN FINAL MAZE
-            // (spaces that were part of the random walk, but potentially not added to final maze)
-            for (int i = 0; i < r; i++) {
-                for (int j = 0; j < c; j++) {
-                    if ((&grid[i][j])->cell_state == PART_OF_MAZE_WALK) (&grid[i][j])->cell_state = NOT_PART_OF_MAZE;
-                }
-            }
-
-    // END LOOP
-    printf("------------------\n");
-    printf("Number of cells in final maze: %d / %d\n", num_of_cells_in_maze, r*c);
+        }
     }
+
+    int cell_count = 0;
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            if (grid[i][j].cell_state == PART_OF_MAZE_FINAL) cell_count++;
+        }
+    }
+    printf("Real count of number of cells in final maze: %d\n", cell_count);
+    printf("------------------\n");
 
     return grid;
 }
 
-
-// Helper function to perform a random walk starting at a random row,col
-void performRandomWalk(GridCell **grid, int r, int c, int random_start_row, int random_start_col) {
-
-    printf("Performing random walk starting at: %d, %d\n", random_start_row, random_start_col);
-
-    GridCell *curr_cell, *next_cell;
-    curr_cell = &grid[random_start_row][random_start_col];
-
-    // int curr_row_pos = random_start_row;
-    // int curr_col_pos = random_start_col;
-
-    int next_row_pos = random_start_row;
-    int next_col_pos = random_start_col;
-    
-    // bool loop_found = false;
-    bool connected_to_final_maze = false;
-    int move_direction;
-    while (!connected_to_final_maze) {
-
-        // choose one of the 4 cardinal directions to move in
-        //           N 
-        //          (1)
-        //  W (4)         (2) E
-        //          (3) 
-        //           S
-
-        // printf("Moving from: %d, %d to ", next_row_pos, next_col_pos);
-        // getValidMove() modifies next_row/col_pos so that when the method returns, the variables identify the position of the next valid cell 
-        move_direction = getValidMove(grid, r, c, &next_row_pos, &next_col_pos);
-        // printf("%d, %d with direction %d\n", next_row_pos, next_col_pos, move_direction);
-
-        // printf("Trying to find cell: %d, %d\n", random_start_row, random_start_col);
-
-        next_cell = &grid[next_row_pos][next_col_pos];
-
-        curr_cell->next_node = next_cell;
-        if (next_cell->cell_state == PART_OF_MAZE_FINAL) {
-            
-            switch (move_direction) {
-                case 1: 
-                    curr_cell->cell_exit_direction = NORTH; 
-                    next_cell->cell_entrance_direction = SOUTH;
-                    break;
-                case 2: 
-                    curr_cell->cell_exit_direction = EAST;
-                    next_cell->cell_entrance_direction = WEST;
-                    break;
-                case 3: 
-                    curr_cell->cell_exit_direction = SOUTH; 
-                    next_cell->cell_entrance_direction = NORTH;
-                    break;
-                case 4: 
-                    curr_cell->cell_exit_direction = WEST; 
-                    next_cell->cell_entrance_direction = EAST;
-                    break;
-                default: printf("Should not hit this defualt case, this is an error\n");
-            }
-            connected_to_final_maze = true;
-        } 
-        else if (next_cell->cell_state == NOT_PART_OF_MAZE || next_cell->cell_state == PART_OF_MAZE_WALK) {
-
-            curr_cell->cell_state = PART_OF_MAZE_WALK;
-            switch (move_direction) {
-                case 1: 
-                    curr_cell->cell_exit_direction = NORTH; 
-                    next_cell->cell_entrance_direction = SOUTH;
-                    break;
-                case 2: 
-                    curr_cell->cell_exit_direction = EAST;
-                    next_cell->cell_entrance_direction = WEST;
-                    break;
-                case 3: 
-                    curr_cell->cell_exit_direction = SOUTH; 
-                    next_cell->cell_entrance_direction = NORTH;
-                    break;
-                case 4: 
-                    curr_cell->cell_exit_direction = WEST; 
-                    next_cell->cell_entrance_direction = EAST;
-                    break;
-                default: printf("Should not hit this defualt case, this is an error\n");
-            }
-
-        }
-        curr_cell = next_cell;
-    }
-
-    return;
-}
 
 
 // Helper function to generate a random number between min and max
@@ -210,7 +273,6 @@ int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col
                 if (isValidIndex(r, c, (*curr_row_pos)-1, (*curr_col_pos))) {
                     (*curr_row_pos)--;
                     found_valid_move = true;
-                    // printf("moving north (1)\n");
                     return 1;
                 }
             }
@@ -219,7 +281,6 @@ int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col
                 if (isValidIndex(r, c, (*curr_row_pos), (*curr_col_pos)+1)) {
                     (*curr_col_pos)++;
                     found_valid_move = true;
-                    // printf("moving east (2)\n");
                     return 2;
                 }
             }
@@ -228,7 +289,6 @@ int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col
                 if (isValidIndex(r, c, (*curr_row_pos)+1, (*curr_col_pos))) {
                     (*curr_row_pos)++;
                     found_valid_move = true;
-                    // printf("moving south (3)\n");
                     return 3;
                 }
             }
@@ -237,7 +297,6 @@ int getValidMove(GridCell **grid, int r, int c, int *curr_row_pos, int *curr_col
                 if (isValidIndex(r, c, (*curr_row_pos), (*curr_col_pos)-1)) {
                     (*curr_col_pos)--;
                     found_valid_move = true;
-                    // printf("moving west (4)\n");
                     return 4;
                 }
             }
@@ -252,7 +311,7 @@ void resetMaze(GridCell **grid, int r, int c) {
     for (int i = 0; i < r; i++) {
         for (int j = 0; j < c; j++) {
             (&grid[i][j])->cell_state = NOT_PART_OF_MAZE;
-            (&grid[i][j])->cell_exit_direction = NONE;
+             (&grid[i][j])->start_cell = false;
             (&grid[i][j])->next_node = NULL;
         }
     }

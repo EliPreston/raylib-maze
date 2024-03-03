@@ -25,7 +25,6 @@ GridCell **createCellGrid(int window_width, int window_height, int node_distance
 
     int x_pos = 0;
     int y_pos = 0;
-
     
     for (int r = 0; r < num_rows; r++) {
         for (int c = 0; c < num_cols; c++) {
@@ -33,10 +32,10 @@ GridCell **createCellGrid(int window_width, int window_height, int node_distance
             
             GridCell gc = {
                 (Vector2) { x_pos, y_pos },
+                false,
                 NOT_PART_OF_MAZE,
                 NULL,
-                NONE,
-                NONE,
+                {1, 1, 1, 1},
             };
 
             grid[r][c] = gc;
@@ -64,25 +63,21 @@ int drawGridCells(GridCell **grid, int r, int c, int node_distance) {
             curr_cell = &grid[i][j];
             top_left = curr_cell->top_left;
 
-            if (curr_cell->cell_state == PART_OF_MAZE_FINAL) {
-                // DrawRectangleV(top_left, (Vector2) {node_distance, node_distance}, GREEN);
-
-
-                if ((curr_cell->cell_exit_direction != NORTH && curr_cell->cell_entrance_direction != NORTH))
-                    drawNorthWall(curr_cell, node_distance);
-
-                if (curr_cell->cell_exit_direction != EAST && curr_cell->cell_entrance_direction != EAST)
-                    drawEastWall(curr_cell, node_distance);
-
-                if ((curr_cell->cell_exit_direction != SOUTH && curr_cell->cell_entrance_direction != SOUTH)) 
-                    drawSouthWall(curr_cell, node_distance);
-
-                if (curr_cell->cell_exit_direction != WEST && curr_cell->cell_entrance_direction != WEST)
-                    drawWestWall(curr_cell, node_distance);
+            if (curr_cell->start_cell) {
+                DrawRectangleV(top_left, (Vector2) {node_distance, node_distance}, GREEN);
+                
+                
+            } else if (curr_cell->cell_state == PART_OF_MAZE_FINAL) {
+                
+                DrawCircle((top_left.x)+(node_distance/2), (top_left.y)+(node_distance/2), 1.0, RED);
+                if ( (curr_cell->edges)[0] == 1) drawNorthWall(curr_cell, node_distance);
+                if ( (curr_cell->edges)[1] == 1) drawEastWall(curr_cell, node_distance);
+                if ( (curr_cell->edges)[2] == 1) drawSouthWall(curr_cell, node_distance);
+                if ( (curr_cell->edges)[3] == 1) drawWestWall(curr_cell, node_distance);
 
             } else { 
-                DrawRectangleV(top_left, (Vector2) {node_distance, node_distance}, BLACK); 
-                // DrawRectangleLines(top_left.x, top_left.y, node_distance, node_distance, BLACK);  
+                // DrawRectangleV(top_left, (Vector2) {node_distance, node_distance}, BLACK); 
+                DrawRectangleLines(top_left.x, top_left.y, node_distance, node_distance, WHITE);  
             }
             
         }
