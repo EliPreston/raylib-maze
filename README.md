@@ -8,6 +8,8 @@
 
 #### 1. Graph Theory
 ##### Wilson's Algorithm 
+- Still a WIP, but working for the most part
+- Very unoptomized, code needs to be refactored, cleaned, and optimized where possible (I'm not super concerned with crazy optimization)
 ![Alt Screenshot of a maze created](/img/Wilson_semi_working_v1.png)
 
 ##### Prim's Algorithm
