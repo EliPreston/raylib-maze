@@ -69,15 +69,15 @@ int drawGridCells(GridCell **grid, int r, int c, int node_distance) {
                 
             } else if (curr_cell->cell_state == PART_OF_MAZE_FINAL) {
                 
-                DrawCircle((top_left.x)+(node_distance/2), (top_left.y)+(node_distance/2), 1.0, RED);
+                // DrawCircle((top_left.x)+(node_distance/2), (top_left.y)+(node_distance/2), 1.0, RED);
                 if ( (curr_cell->edges)[0] == 1) drawNorthWall(curr_cell, node_distance);
                 if ( (curr_cell->edges)[1] == 1) drawEastWall(curr_cell, node_distance);
                 if ( (curr_cell->edges)[2] == 1) drawSouthWall(curr_cell, node_distance);
                 if ( (curr_cell->edges)[3] == 1) drawWestWall(curr_cell, node_distance);
 
             } else { 
-                // DrawRectangleV(top_left, (Vector2) {node_distance, node_distance}, BLACK); 
-                DrawRectangleLines(top_left.x, top_left.y, node_distance, node_distance, WHITE);  
+                DrawRectangleV(top_left, (Vector2) {node_distance, node_distance}, BLACK); 
+                // DrawRectangleLines(top_left.x, top_left.y, node_distance, node_distance, WHITE);  
             }
             
         }

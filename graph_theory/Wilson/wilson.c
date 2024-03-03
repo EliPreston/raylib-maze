@@ -75,6 +75,7 @@ GridCell **generateWilsonsMaze(GridCell **grid, int r, int c, int node_distance)
         }
 
         if (took_too_long) {
+            return grid;
             switch (flip_search_direction) {
                 case 0:
                     flip_search_direction = 1;
