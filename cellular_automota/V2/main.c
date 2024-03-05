@@ -28,9 +28,6 @@ int main(int argc, char *argv[]) {
     Cell** cells_grid = NULL;
     cells_grid = createCellGrid(width, height, node_distance);
 
-    int* cells_grid_v2 = NULL;
-    cells_grid_v2 = createCellGridV2(width, height);
-    
     InitWindow(width, height, "Cellular Automota");
     SetTargetFPS(60);
 
@@ -49,7 +46,6 @@ int main(int argc, char *argv[]) {
         if (IsKeyPressed(KEY_S)) {
             cells_grid = cellAutomationUpdateGrid(cells_grid, num_rows, num_cols);
         }
-        
         
 
         // Drawing objects/entities

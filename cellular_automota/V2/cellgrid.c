@@ -7,24 +7,6 @@
 #include "cell.h"
 
 
-
-int* createCellGridV2(int window_width, int window_height) {
-
-    int num_rows = (window_height / cell_dimension);
-    int num_cols = (window_width / cell_dimension);
-    printf("%d x %d\n", num_rows, num_cols);
-
-    int *grid;
-    grid = malloc((num_rows * num_cols) * sizeof(int));
-
-    // 0 means dead cell, 1 means alive cell
-    
-
-
-
-}
-
-
 // Create grid of nodes based on height, width, and distance between nodes
 Cell **createCellGrid(int window_width, int window_height, int cell_dimension) {
 
@@ -35,9 +17,7 @@ Cell **createCellGrid(int window_width, int window_height, int cell_dimension) {
     Cell **grid;
     grid = malloc(num_rows * sizeof(Cell *));
 
-    for (int i = 0; i < num_rows; i++) {
-        grid[i] = malloc(num_cols * sizeof(Cell));
-    }
+    for (int i = 0; i < num_rows; i++) grid[i] = malloc(num_cols * sizeof(Cell));
 
     Cell gc;
     int x_pos = 0;
@@ -46,7 +26,7 @@ Cell **createCellGrid(int window_width, int window_height, int cell_dimension) {
 
     int row_mid = floor(num_rows/2) - 1;
     int col_mid = floor(num_cols/2) - 1;
-    int initial_size = 30;
+    int initial_size = 20;
     
     time_t t;
     srand((unsigned) time(&t));
@@ -150,7 +130,13 @@ int checkSurroundingCells(Cell **grid, int i, int j, int r, int c) {
 
 Cell **cellAutomationUpdateGrid(Cell **grid, int r, int c) {
 
-    Cell *curr_cell;
+
+    Cell **next_iteration_grid;
+    next_iteration_grid = malloc(r * sizeof(Cell *));
+
+    for (int i = 0; i < r; i++) next_iteration_grid[i] = malloc(c * sizeof(Cell));
+
+    Cell curr_cell;
     int neighbourhood;
 
     // for (int iter = 1; iter < 6; iter++) {
@@ -158,23 +144,45 @@ Cell **cellAutomationUpdateGrid(Cell **grid, int r, int c) {
             for (int j = 0; j < c; j++) {
 
                 
-                curr_cell = &grid[i][j];
+                curr_cell = grid[i][j];
+                // Cell updated_cell;
                 neighbourhood = checkSurroundingCells(grid, i, j, r, c);
+
+                Cell updated_cell = {
+                    (Vector2) { curr_cell.position.x, curr_cell.position.y },
+                    curr_cell.dimension,
+                    0,
+                };
                 
-                if (curr_cell->solid == 0) {
-                    
-                    if (neighbourhood == 3) {
-                        curr_cell->solid = 1;
+                if (curr_cell.solid == 0) {
+
+                    switch (neighbourhood) {
+                        case 3:
+                            updated_cell.solid = 1;
+                            next_iteration_grid[i][j] = updated_cell;
+                            break;
+
+                        default:
+                            next_iteration_grid[i][j] = updated_cell;
                     } 
                 }
-                if (curr_cell->solid == 1) {
-                    if (neighbourhood < 1 || neighbourhood > 5) {
-                        curr_cell->solid = 0;
+
+                if (curr_cell.solid == 1) {
+
+                    if (neighbourhood < 1 || neighbourhood > 4) {
+                        next_iteration_grid[i][j] = updated_cell;
+                    
+                    } else {
+                        updated_cell.solid = 1;
+                        next_iteration_grid[i][j] = updated_cell;
                     }
                 }            
             }
         }
     // }
 
-    return grid;
+    // for (int idx = 0; idx < r; idx++) free(grid[idx]);
+    // free(grid);
+
+    return next_iteration_grid;
 }
