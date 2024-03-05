@@ -7,6 +7,24 @@
 #include "cell.h"
 
 
+
+int* createCellGridV2(int window_width, int window_height) {
+
+    int num_rows = (window_height / cell_dimension);
+    int num_cols = (window_width / cell_dimension);
+    printf("%d x %d\n", num_rows, num_cols);
+
+    int *grid;
+    grid = malloc((num_rows * num_cols) * sizeof(int));
+
+    // 0 means dead cell, 1 means alive cell
+    
+
+
+
+}
+
+
 // Create grid of nodes based on height, width, and distance between nodes
 Cell **createCellGrid(int window_width, int window_height, int cell_dimension) {
 
