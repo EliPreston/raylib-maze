@@ -20,7 +20,11 @@
 #### 2. Cellular Automation
 ##### Interesting patterns
 1. Mazectric rulestring (B3/S1234 same as 1234/3)
+
 ![Alt Screenshot of initial population generated](/img/Initial_population.png)
+
 ![Alt Screenshot of grid expanding](/img/Population_expanding.png)
+
 ![Alt Screenshot of grid hitting edge of window](/img/Population_reaching_edge.png)
+
 ![Alt Screenshot of final resulting grid](/img/Population_fill.png)
