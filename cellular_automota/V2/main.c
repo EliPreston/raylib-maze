@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
             // Draw grid
             drawCellGrid(cells_grid, num_rows, num_cols);
 
-            DrawRectangle(10, 10, 100, 40, WHITE);
+            DrawRectangle(10, 10, 110, 50, WHITE);
             DrawFPS(20, 20);
             DrawText(generation_num, 20, 40, 10, RED);
             // DrawTextEx(Font font, const char *text, Vector2 position, float fontSize, float spacing, Color tint);
