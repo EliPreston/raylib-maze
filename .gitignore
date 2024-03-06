@@ -4,6 +4,7 @@
 *.bak
 *.DS_Store
 *.vscode
+*.extra
 
 # Prerequisites
 *.d
