@@ -20,6 +20,8 @@ int main(int argc, char *argv[]) {
     const int width = 1000;
     const int height = 850;
     const int node_distance = 5;
+    int run_automation_flag = 0;
+    int automation_counter = 0;
 
     int generation_count = 1;
     char gen_count_txt[] = "Generation #: ";
@@ -41,17 +43,15 @@ int main(int argc, char *argv[]) {
     InitWindow(width, height, "Cellular Automota");
     SetTargetFPS(60);
 
-    int flag = 0;
-    int counter = 0;
 
     // Main game loop  ---------------
     while (!WindowShouldClose()) {
-        counter++;
+        automation_counter++;
         
         // Any update functions
         
         if (IsKeyPressed(KEY_R)) {
-            flag = 0;
+            run_automation_flag = 0;
 
             for (int idx = 0; idx < num_rows; idx++) free(cells_grid[idx]);
             free(cells_grid);
@@ -66,11 +66,17 @@ int main(int argc, char *argv[]) {
         }
 
         if (IsKeyPressed(KEY_S)) {
-            flag = 1;
-            printf("Starting automation - flag set to 1\n");
+            run_automation_flag = 1;
+            printf("Starting automation - run_automation_flag set to 1\n");
         }
 
-        if (flag == 1 && (counter % 10 == 0)) {
+        if (IsKeyPressed(KEY_P)) {
+            run_automation_flag = 0;
+            printf("Pausing automation - run_automation_flag set to 0\n");
+
+        }
+
+        if (run_automation_flag == 1 && (automation_counter % 10 == 0)) {
 
             cells_grid = cellAutomationUpdateGrid(cells_grid, num_rows, num_cols);
 
