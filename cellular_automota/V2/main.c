@@ -73,7 +73,6 @@ int main(int argc, char *argv[]) {
         if (IsKeyPressed(KEY_P)) {
             run_automation_flag = 0;
             printf("Pausing automation - run_automation_flag set to 0\n");
-
         }
 
         if (run_automation_flag == 1 && (automation_counter % 10 == 0)) {
@@ -86,7 +85,6 @@ int main(int argc, char *argv[]) {
             generation_num = malloc(strlen(gen_count_txt) + 20 + 1); // +1 for the null-terminator
             strcpy(generation_num, gen_count_txt);
             strcat(generation_num, gen_count_int);
-
         }
         
 
@@ -98,6 +96,7 @@ int main(int argc, char *argv[]) {
             // Draw grid
             drawCellGrid(cells_grid, num_rows, num_cols);
 
+            // Draw FPS and cell generation counter
             DrawRectangle(10, 10, 110, 50, WHITE);
             DrawFPS(20, 20);
             DrawText(generation_num, 20, 40, 10, RED);
